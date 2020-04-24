@@ -1,14 +1,10 @@
 ﻿using Microsoft.WindowsAPICodePack.Shell;
 using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace ImagesMove
@@ -35,13 +31,31 @@ namespace ImagesMove
         private void s_Click(object sender, EventArgs e)
         {
             lblStatus.Text = @"C:\Users\Narender Boyapally\Pictures";
+            System.Threading.Thread procThread = new System.Threading.Thread(this.FilesMove);
+
+            procThread.Start();
+
+        }
+        void FilesMove()
+        {
             DirectoryInfo di = new DirectoryInfo(textBox1.Text);
+            if (!di.Exists)
+            {
+                MessageBox.Show(string.Format("'{0} 'directory doesn;t exist. Please check.", textBox1.Text));
+                return;
+            }
 
             //File[] files = di.GetFiles("*.jp*", SearchOption.AllDirectories);
             FileInfo[] files = di.GetFiles("*.jp*", SearchOption.AllDirectories).Union(di.GetFiles("*.pn*", SearchOption.AllDirectories)).ToArray();
+            int fileCount = files.Count();
+            UpdateStatus("File Count:" + files.Count().ToString());
 
-            foreach (var file in files)
-            {
+            int i = 1;
+            foreach (var file in files)            {
+
+                UpdateStatus(string.Format("{0} of {1} FileName: {2}, (Percentage: {3}% ) ", i.ToString(), fileCount.ToString(), file.Name, Math.Round(((i/(float)fileCount)*100)).ToString()));
+                
+                i++;
                 DateTime dt = GetDateTakenFromImage(file.FullName);
 
                 string outputFolder = textBox2.Text;
@@ -76,20 +90,21 @@ namespace ImagesMove
                             FileInfo fi = new FileInfo(fileName);
                             fi.MoveTo(dupFileName);
                         }
-                        File.Move(file.FullName, fileName);
+                        //File.Move(file.FullName, fileName);
 
                     }
                     catch (Exception ex)
                     {
                         lblStatus.Text = ex.Message;
                     }
-                    lblStatus.Text = "File Moved " + fileName;
-
+                    // lblStatus.Text = "File Moved " + fileName;
+                    UpdateStatus("File Moved " + fileName);
                 }
 
             }
             MessageBox.Show("Completed");
         }
+
         private delegate void UpdateStatusDelegate(string status);
         private void UpdateStatus(string status)
         {
