@@ -15,6 +15,7 @@ namespace ImagesMove
         {
 
             InitializeComponent();
+
             //textBox1.Text = @"C:\Users\Narender Boyapally\Pictures";
         }
 
