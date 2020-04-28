@@ -16,7 +16,7 @@ namespace ImagesMove
 
             InitializeComponent();
 
-            //textBox1.Text = @"C:\Users\Narender Boyapally\Pictures";
+            //textBox1.Text = @"C:\Users\Narender Boyapally\Pictures ";
         }
 
         private void label1_Click(object sender, EventArgs e)
